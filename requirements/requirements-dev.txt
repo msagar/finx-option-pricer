@@ -13,4 +13,3 @@ jupyterlab-dash
 jupyter_dash
 nbstripout
 plotly
-

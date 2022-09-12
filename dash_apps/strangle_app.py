@@ -7,9 +7,10 @@ import plotly.express as px
 from dash import dcc, html
 from dash.dependencies import Input, Output
 
+from dash_apps.utils import calc_max_loss, calc_max_loss_strike, calc_max_profit
 from finx_option_pricer.option_plot import OptionsPlot
 from finx_option_pricer.option_structures import gen_strangle
-from dash_apps.utils import calc_max_profit, calc_max_loss, calc_max_loss_strike
+
 
 ###############################################################################
 # data prep helpers
@@ -174,7 +175,6 @@ def update_graph(
     # metrics
     max_profit = calc_max_profit(df)
     max_loss = calc_max_loss(df)
-    
 
     move_percent = vix_std * vix_percent * math.sqrt(vix_days / 252.0)
     move_underlying = spot_price * move_percent
