@@ -6,7 +6,7 @@ import pandas as pd
 
 from finx_option_pricer.option import Option
 
-MARKET_DAYS_PER_YEAR = 252
+MARKET_DAYS_PER_YEAR_US_STOCK = 252
 
 
 @dataclass

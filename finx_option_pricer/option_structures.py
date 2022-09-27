@@ -3,13 +3,49 @@ from typing import List
 from finx_option_pricer.option import Option
 from finx_option_pricer.option_plot import OptionPosition
 
-MARKET_DAYS_PER_YEAR = 252
+MARKET_DAYS_PER_YEAR_US_STOCK = 252
 RATE_ZERO = 0.0
 
 
-def annualized_days(days: int) -> float:
-    "Convert days to years"
-    return days / MARKET_DAYS_PER_YEAR
+def annualized_days(days: float, market_days_per_year=MARKET_DAYS_PER_YEAR_US_STOCK) -> float:
+    """Convert days to decimal years"""
+    return days / market_days_per_year
+
+
+def gen_combo(
+    spot_price: float,
+    input_list: List[dict],
+) -> List[OptionPosition]:
+    """
+    Generate a combo structure of 1 or more options
+
+    Assumes interest rate is 0.0
+    """
+    for row in input_list:
+        for expected_key in ["strike", "dte", "ivfront", "option_type"]:
+            assert expected_key in row, f"Missing expected input key={expected_key} in {row.keys()}"
+
+    combo = []
+
+    for input_row in input_list:
+        option_type = input_row["option_type"]
+        assert option_type in ["c", "p"], f"Invalid option_type={option_type}"
+
+        option = Option(
+            S=spot_price,
+            K=float(input_row["strike"]),
+            T=annualized_days(float(input_row["dte"])),
+            r=float(RATE_ZERO),
+            sigma=float(input_row["ivfront"]),
+            option_type=option_type,
+        )
+        quantity = int(input_row["quantity"])
+        # TODO(weston) - make this optional. If not provided, use ivfront
+        end_sigma = float(input_row["ivfront"])
+        option_position = OptionPosition(option=option, quantity=quantity, end_sigma=end_sigma)
+        combo.append(option_position)
+
+    return combo
 
 
 def gen_calendar(
